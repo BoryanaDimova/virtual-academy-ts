@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import http from "http"
 import cors from "cors";
 import bodyParser from 'body-parser';
-// import { getSchema } from "./schema";
+import { getSchema } from "./schema";
 // import geoip from "geoip-lite";
 // import MobileDetect from "mobile-detect";
 import dotenv from "dotenv";
@@ -24,7 +24,7 @@ const dbUrl = process.env.MONGODB_URL
 //     secret: process.env.JWT_SECRET,
 //     algorithms: ['HS256'],
 //     credentialsRequired: false,
-// })
+// }) 
 
 
 mongoose.connect(dbUrl, {
@@ -48,9 +48,10 @@ mongoose.connect(dbUrl, {
       bodyParser.json()
     )
       
-    // const schema = await getSchema();
+    const schema = await getSchema();
 
     const server = new ApolloServer({
+      schema,
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         ApolloServerPluginLandingPageGraphQLPlayground(),
