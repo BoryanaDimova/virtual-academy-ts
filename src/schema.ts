@@ -12,7 +12,9 @@ export const getSchema = async () => {
         resolvers: [
             UserResolver
         ],
+        dateScalarMode: "isoDate",
         emitSchemaFile: path.resolve(__dirname, "schema.gql"),
+        validate: true,
         // use document converting middleware
         globalMiddlewares: [TypegooseMiddleware],
         // use ObjectId scalar mapping

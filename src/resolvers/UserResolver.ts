@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Arg, Authorized } from "type-graphql";
-import { User, UserModel } from "../entitities/UserEntity";
-import { CreateUserInput, EditUserInput } from "../inputsAndArgs/UserArgs";
+import { User, UserModel } from "../entitities/user.type";
+import { CreateUserInput } from "../inputsAndArgs/user.input";
 import bcryptjs from "bcryptjs"
 // import { UserRoles } from "./user-roles";
 
@@ -31,9 +31,9 @@ export class UserResolver {
     return await UserModel.findByIdAndRemove(_id);
   }
 
-  @Mutation(returns => User)
-  async editUser(@Arg("_id") _id: string, @Arg("data") data: EditUserInput):Promise<User> {
-    const userData = data.password ? {...data, password: bcryptjs.hashSync(data.password, 10)} : data
-    return await UserModel.findByIdAndUpdate(_id, userData, {new: true});
-  }
+  // @Mutation(returns => User)
+  // async editUser(@Arg("_id") _id: string, @Arg("data") data: EditUserInput):Promise<User> {
+  //   const userData = data.password ? {...data, password: bcryptjs.hashSync(data.password, 10)} : data
+  //   return await UserModel.findByIdAndUpdate(_id, userData, {new: true});
+  // }
 }

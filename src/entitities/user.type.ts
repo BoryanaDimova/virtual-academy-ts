@@ -1,11 +1,9 @@
 import { ObjectType, Field, Authorized } from "type-graphql";
-import { prop as Prop, getModelForClass, modelOptions, Severity } from "@typegoose/typegoose"
-import { ObjectId } from "mongodb"
-@ObjectType()
-export class User {
+import { prop as Prop, getModelForClass, modelOptions, Severity } from "@typegoose/typegoose";
+import { BaseEntity } from "./baseEntity.type";
 
-  @Field()
-  readonly _id: ObjectId;
+@ObjectType()
+export class User extends BaseEntity{
 
   @Prop({required: true})
   @Field()

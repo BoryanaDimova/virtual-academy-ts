@@ -32,9 +32,9 @@ type Query {
 }
 
 type User {
-  _id: ObjectId!
   email: String!
   firstName: String!
+  id: ObjectId!
   isActive: Boolean!
   lastLogin: Float!
   lastName: String!
