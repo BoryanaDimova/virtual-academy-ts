@@ -4,4 +4,7 @@ import { User } from "../entitities/user.type";
 export interface Context {
     req: Request,
     user: User,
+    ip: any,
+    location: any,
+    md: any
 }

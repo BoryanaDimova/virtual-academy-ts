@@ -34,7 +34,7 @@ export class User extends BaseEntity{
 
   @Field(type => [String])
   @Prop({default: [UserRoles.USER]})
-  roles?: string[]
+  roles: string[]
 }
 
 export const UserModel = getModelForClass(User, { schemaOptions: { timestamps: true }})

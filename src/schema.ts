@@ -13,7 +13,10 @@ import { RatingResolver } from "./resolvers/rating.resolver";
 export const getSchema = async () => {
     const schema = await buildSchema({
         resolvers: [
-            UserResolver, CourseResolver, AuthResolver, RatingResolver
+            UserResolver, 
+            CourseResolver, 
+            RatingResolver,
+            AuthResolver,
         ],
         dateScalarMode: "isoDate",
         emitSchemaFile: path.resolve(__dirname, "schema.gql"),
@@ -22,7 +25,7 @@ export const getSchema = async () => {
         globalMiddlewares: [TypegooseMiddleware],
         // use ObjectId scalar mapping
         scalarsMap: [{ type: ObjectId, scalar: ObjectIdScalar }],
-        authChecker
+        authChecker,
       });
     return schema
 }

@@ -24,19 +24,33 @@ export class UserResolver {
     const userData = {...data, password: bcryptjs.hashSync(data.password, 10)}; 
     const newUser = new UserModel(userData);
     await newUser.save();
-    return newUser
+    return newUser;
   }
 
   @Authorized()
   @Mutation(returns => User)
-  async updateUser(@Arg("id") id: string, @Arg("data") data: UpdateUserInput) {
+  async updateUser(@Arg("_id") _id: string, @Arg("data") data: UpdateUserInput) :Promise<User> {
     const userData = data.password ? {...data, password: bcryptjs.hashSync(data.password, 10)} : data;
-    return await UserModel.findByIdAndUpdate(id, userData, {new: true});
+    return await UserModel.findByIdAndUpdate(_id, userData, {new: true});
+  }
+
+  @Authorized()
+  @Mutation(returns => User)
+  async deactivateUser(@Arg("_id") _id: string) :Promise<User>{
+    const userData = {isActive: false};
+    return await UserModel.findByIdAndUpdate(_id, userData, {new: true});
+  }
+
+  @Authorized()
+  @Mutation(returns => User)
+  async activateUser(@Arg("_id") _id: string) :Promise<User>{
+    const userData = {isActive: true};
+    return await UserModel.findByIdAndUpdate(_id, userData, {new: true});
   }
 
   @Authorized([UserRoles.ADMIN])
   @Mutation(returns => User)
-  async deleteUser(@Arg("id") id: string):Promise<User> {
-    return await UserModel.findByIdAndRemove(id);
+  async deleteUser(@Arg("_id") _id: string):Promise<User> {
+    return await UserModel.findByIdAndRemove(_id);
   }
 }

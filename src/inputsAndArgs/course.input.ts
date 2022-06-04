@@ -1,7 +1,9 @@
+import { Ref } from "@typegoose/typegoose";
 import { MaxLength, MinLength, IsEmail } from "class-validator";
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import { Field, InputType } from "type-graphql";
 import { Course } from "../entitities/course.type";
+import { User } from "../entitities/user.type";
 
 
 @InputType()
@@ -16,9 +18,6 @@ export class CreateCourseInput implements Partial<Course>{
 
   @Field()
   imageUrl: string;
-
-  @Field()
-  userId: ObjectId;
 }
 
 @InputType()

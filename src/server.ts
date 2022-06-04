@@ -1,7 +1,6 @@
 import { ApolloServer } from "apollo-server-express"
 import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import express from "express"
-import jwt from "express-jwt";
 import "reflect-metadata";
 import mongoose from "mongoose";
 import http from "http"
@@ -10,19 +9,25 @@ import bodyParser from 'body-parser';
 import { getSchema } from "./schema";
 import dotenv from "dotenv";
 import { Context } from "./auth/context";
+import geoip from "geoip-lite";
+import MobileDetect from "mobile-detect";
+import { getUserFromToken } from "./auth/token";
+import { expressjwt } from "express-jwt";
 
 dotenv.config();
 
 
 const graphQlPath = process.env.GRAPHQL_PATH;
 const port = process.env.PORT;
-const dbUrl = process.env.MONGODB_URL
+const dbUrl = process.env.MONGODB_URL;
+const HEADER_AUTH = 'authorization';
 
-const auth = jwt({
+const auth = expressjwt({
     secret: process.env.JWT_SECRET,
     algorithms: ['HS256'],
     credentialsRequired: false,
-}) 
+   
+}) ;
 
 
 mongoose.connect(dbUrl, {
@@ -34,7 +39,7 @@ mongoose.connect(dbUrl, {
   })
   
   async function startApolloServer() {
-
+    console.log("start server");
     const app = express();
     const httpServer = http.createServer(app);
   
@@ -43,10 +48,12 @@ mongoose.connect(dbUrl, {
       cors({
         origin: '*'
       }),
-      bodyParser.json()
+      bodyParser.json(),
+      auth
     )
       
     const schema = await getSchema();
+    console.log("schema");
 
     const server = new ApolloServer({
       schema,
@@ -55,23 +62,42 @@ mongoose.connect(dbUrl, {
         ApolloServerPluginLandingPageGraphQLPlayground(),
       ],
       introspection: true,
-      context: ({req}) => {
+      context: async ({req}) => {
+        const ip = req.header['x-forwarded-for'] || req.socket.remoteAddress;
+        // Get the user token from the headers.
+        let authToken, currentUser;
+        try {
+          authToken = req.headers[HEADER_AUTH]
+    
+          if (authToken) {
+            currentUser = await getUserFromToken(authToken)
+          }
+        } catch (e) {
+          console.warn(`Unable to authenticate using auth token: ${authToken}`)
+        }
+
           const context: Context = {
             req,
-            user: req.user
+            user: currentUser,
+            ip,
+            location: geoip.lookup(ip),
+            md: new MobileDetect(req.headers['user-agent']),
           };
           return context;
       },
+
     });
 
     await server.start();
-  
+    console.log("server started");
     server.applyMiddleware({ app, path: graphQlPath });
+    console.log("middleware applied");
     await new Promise(resolve => httpServer.listen({ port }));
     
     console.log(`Server started at http://localhost:${port}/${graphQlPath}`)
     return { server, app}
   
   }
-  // http://localhost:8080/graphql
+
+  // http://localhost:4000/graphql
   startApolloServer();

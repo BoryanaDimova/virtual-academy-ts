@@ -1,12 +1,12 @@
-import { Resolver, FieldResolver, Root, Query, Arg, Mutation, Ctx } from "type-graphql";
-import { Course, CourseModel } from "../entitities/course.type";
-import { Rating, RatingModel } from "../entitities/rating.type";
+import { Resolver, FieldResolver, Root } from "type-graphql";
+import { Rating } from "../entitities/rating.type";
 import { User, UserModel } from "../entitities/user.type";
 
 
 @Resolver(of => Rating)
 export class RatingResolver {
-    @FieldResolver()
+
+    @FieldResolver(returns => User)
     async creator(@Root() rating: Rating): Promise<User> {
       return (await UserModel.findById(rating.user));
     }

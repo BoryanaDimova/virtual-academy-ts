@@ -3,6 +3,23 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Course implements IBaseEntity {
+  _id: ObjectId!
+  averageRating: Float!
+  creator: User!
+  datePublished: DateTime!
+  description: String!
+  imageUrl: String!
+  ratings: [Rating!]!
+  title: String!
+}
+
+input CreateCourseInput {
+  description: String!
+  imageUrl: String!
+  title: String!
+}
+
 input CreateUserInput {
   email: String!
   firstName: String!
@@ -10,33 +27,72 @@ input CreateUserInput {
   password: String!
 }
 
-input EditUserInput {
-  email: String
-  firstName: String
-  lastName: String
-  password: String
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
+interface IBaseEntity {
+  _id: ObjectId!
 }
 
 type Mutation {
+  activateUser(_id: String!): User!
+  createCourse(course: CreateCourseInput!): Course!
   createUser(data: CreateUserInput!): User!
+  deactivateUser(_id: String!): User!
+  deleteCourse(_id: ObjectId!): Course!
   deleteUser(_id: String!): User!
-  editUser(_id: String!, data: EditUserInput!): User!
+  login(email: String!, password: String!): String!
+  rate(rate: RatingInput!): Course!
+  updateCourse(_id: ObjectId!, data: UpdateCourseInput!): Course!
+  updateUser(_id: String!, data: UpdateUserInput!): User!
 }
 
 """Mongo object id scalar type"""
 scalar ObjectId
 
 type Query {
+  course(_id: ObjectId!): Course!
+  courses: [Course!]!
+  currentUser: User!
   user(_id: String!): User!
   users: [User!]!
 }
 
-type User {
+type Rating implements IBaseEntity {
+  _id: ObjectId!
+  creator: User!
+  rating: Int!
+  user: User!
+}
+
+input RatingInput {
+  courseId: ObjectId!
+  rating: Int!
+}
+
+input UpdateCourseInput {
+  description: String
+  imageUrl: String
+  title: String
+}
+
+input UpdateUserInput {
+  email: String
+  firstName: String
+  isActive: Boolean
+  lastName: String
+  password: String
+}
+
+type User implements IBaseEntity {
+  _id: ObjectId!
   email: String!
   firstName: String!
-  id: ObjectId!
   isActive: Boolean!
   lastLogin: Float!
   lastName: String!
   password: String!
+  roles: [String!]!
 }

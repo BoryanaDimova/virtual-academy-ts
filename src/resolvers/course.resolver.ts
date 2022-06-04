@@ -19,8 +19,8 @@ export class CourseResolver {
     }
   
     @Query(returns => Course)
-    async course(@Arg("id", type => ObjectIdScalar) id: ObjectId):Promise<Course> {
-      return await CourseModel.findById(id);
+    async course(@Arg("_id", type => ObjectIdScalar) _id: ObjectId):Promise<Course> {
+      return await CourseModel.findById(_id);
     }
   
     @Authorized()
@@ -28,7 +28,7 @@ export class CourseResolver {
     async createCourse(
       @Arg("course") courseInput: CreateCourseInput, 
       @Ctx() { user }: Context):Promise<Course> {
-      const courseData = {...courseInput, creator: user.id};  
+      const courseData = {...courseInput, creator: user._id};  
       const newCourse = new CourseModel(courseData);
 
       await newCourse.save();
@@ -36,14 +36,14 @@ export class CourseResolver {
     }
   
     @Mutation(() => Course)
-    async updateCourse(@Arg("id", type => ObjectIdScalar) id: ObjectId, @Arg("data") data: UpdateCourseInput) {
-      return await CourseModel.findByIdAndUpdate(id, data, {new: true});
+    async updateCourse(@Arg("_id", type => ObjectIdScalar) _id: ObjectId, @Arg("data") data: UpdateCourseInput) {
+      return await CourseModel.findByIdAndUpdate(_id, data, {new: true});
     }
 
     @Authorized([UserRoles.ADMIN])
     @Mutation(returns => Course)
-    async deleteCourse(@Arg("id", type => ObjectIdScalar) id: ObjectId):Promise<Course> {
-        return await CourseModel.findByIdAndRemove(id);
+    async deleteCourse(@Arg("_id", type => ObjectIdScalar) _id: ObjectId):Promise<Course> {
+        return await CourseModel.findByIdAndRemove(_id);
     }
 
     @Authorized()
@@ -54,16 +54,22 @@ export class CourseResolver {
       if (!course) {
         throw new Error("Invalid course ID");
       }
+
+      let existingRating = course.ratings.find(r => ObjectIdScalar.serialize(r.user) == user._id);
+    
+      if(existingRating){
+        existingRating.rating = rateInput.rating;
+
+      } else{
+        const rateData = {
+          ...rateInput,
+          user: user._id
+        };
   
-      const rateData = {
-        ...rateInput,
-        user: user.id
-      };
+        const rate = new RatingModel(rateData);
+        course.ratings.push(rate);
+      }
 
-      const rate = new RatingModel(rateData);
-
-      // update the recipe
-      course.ratings.push(rate);
       await course.save();
       return course;
     }
