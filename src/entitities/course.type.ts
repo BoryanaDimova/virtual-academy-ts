@@ -1,8 +1,9 @@
-import { ObjectType, Field } from "type-graphql";
-import { prop as Prop, getModelForClass, modelOptions, Severity } from "@typegoose/typegoose";
+import { ObjectType, Field, Float, Arg } from "type-graphql";
+import { prop as Prop, getModelForClass, modelOptions, Severity, Ref } from "@typegoose/typegoose";
 import { Rating } from "./rating.type";
 import { Length } from "class-validator";
 import { BaseEntity } from "./baseEntity.type";
+import { User } from "./user.type";
 
 @ObjectType()
 export class Course extends BaseEntity{
@@ -25,10 +26,12 @@ export class Course extends BaseEntity{
   imageUrl?: string;
 
   @Field(type => [Rating])
-  ratings?: Rating[];
+  @Prop({ type: () => Rating, default: [] })
+  ratings: Rating[];
 
-  @Field({nullable: true})
-  averageRating?: number;
+  @Field(type => User)
+  @Prop({ ref: User, required: true })
+  creator: Ref<User>;
 }
 
 export const CourseModel = getModelForClass(Course, { schemaOptions: { timestamps: true }})

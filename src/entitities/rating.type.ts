@@ -1,22 +1,19 @@
-import { ObjectType, Field, Authorized } from "type-graphql";
-import { prop as Prop, getModelForClass, modelOptions, Severity } from "@typegoose/typegoose"
-import { ObjectId } from "mongodb"
+import { ObjectType, Field, Authorized, Int } from "type-graphql";
+import { prop as Prop, getModelForClass, Ref } from "@typegoose/typegoose"
 import { BaseEntity } from "./baseEntity.type";
+import { User } from "./user.type";
 
 @ObjectType()
-export class Rating extends BaseEntity{
+export class Rating extends BaseEntity {
 
   @Prop({required: true})
-  @Field()
+  @Field(type => Int)
   rating: number;
 
-  @Prop({required: true})
-  @Field()
-  userId: ObjectId;
+  @Field(type => User)
+  @Prop({ ref: User, required: true })
+  user: Ref<User>;
 
-  @Prop({required: true})
-  @Field()
-  courseId: ObjectId;
 }
 
 export const RatingModel = getModelForClass(Rating, { schemaOptions: { timestamps: true }})
