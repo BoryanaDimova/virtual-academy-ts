@@ -16,7 +16,6 @@ import { expressjwt } from "express-jwt";
 
 dotenv.config();
 
-
 const graphQlPath = process.env.GRAPHQL_PATH;
 const port = process.env.PORT;
 const dbUrl = process.env.MONGODB_URL;
@@ -83,9 +82,8 @@ mongoose.connect(dbUrl, {
             location: geoip.lookup(ip),
             md: new MobileDetect(req.headers['user-agent']),
           };
-          return context;
+          return {context};
       },
-
     });
 
     await server.start();

@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "@typegoose/typegoose": "^9.8.1",
+    "apollo-server-cache-redis": "^3.3.1",
     "apollo-server-express": "^3.6.7",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
@@ -35,9 +36,11 @@
     "express-jwt": "^7.7.5",
     "geoip-lite": "^1.4.5",
     "graphql": "^15.8.0",
+    "ioredis": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
     "mobile-detect": "^1.4.5",
     "mongoose": "^6.3.2",
+    "redis": "^4.1.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
     "typedi": "^0.10.0"

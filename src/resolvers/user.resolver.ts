@@ -3,6 +3,7 @@ import { User, UserModel } from "../entitities/user.type";
 import { CreateUserInput, UpdateUserInput } from "../inputsAndArgs/user.input";
 import bcryptjs from "bcryptjs"
 import { UserRoles } from "../auth/user.roles";
+import { UserInputError } from "apollo-server-express";
 // import { UserRoles } from "./user-roles";
 
 @Resolver(of => User)
@@ -21,10 +22,7 @@ export class UserResolver {
   @Authorized()
   @Mutation(returns => User)
   async createUser(@Arg("data") data: CreateUserInput):Promise<User> {
-    const userData = {...data, password: bcryptjs.hashSync(data.password, 10)}; 
-    const newUser = new UserModel(userData);
-    await newUser.save();
-    return newUser;
+    return createNewUser(data);
   }
 
   @Authorized()
@@ -53,4 +51,17 @@ export class UserResolver {
   async deleteUser(@Arg("_id") _id: string):Promise<User> {
     return await UserModel.findByIdAndRemove(_id);
   }
+}
+
+export async function createNewUser(data: CreateUserInput) :Promise<User>{
+  const isExistingUser = await UserModel.find({ 'email' :  data.email });
+  
+  if(isExistingUser.length > 0){
+    throw new UserInputError("Email not unique.");
+  }
+
+  const userData = {...data, password: bcryptjs.hashSync(data.password, 10)}; 
+  const newUser = new UserModel(userData);
+  await newUser.save();
+  return newUser;
 }

@@ -34,5 +34,9 @@ export async function getUserFromToken(token: String): Promise<User> {
         }
         return decoded["_id"];
     });
-    return UserModel.findById(userId);
+
+    let user = await UserModel.findById(userId);
+    user.password = null;
+    return user;
 }
+

@@ -19,6 +19,7 @@ export class CreateUserInput implements Partial<User>{
 
   @Field()
   @MinLength(6)
+  @MaxLength(30)
   password: string;
 }
 
@@ -38,6 +39,7 @@ export class UpdateUserInput implements Partial<User>{
 
   @Field({ nullable: true })
   @MinLength(6)
+  @MaxLength(30)
   password: string;
 
   @Authorized([UserRoles.ADMIN])

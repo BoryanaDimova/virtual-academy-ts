@@ -45,6 +45,7 @@ type Mutation {
   deleteUser(_id: String!): User!
   login(email: String!, password: String!): String!
   rate(rate: RatingInput!): Course!
+  register(data: CreateUserInput!): String!
   updateCourse(_id: ObjectId!, data: UpdateCourseInput!): Course!
   updateUser(_id: String!, data: UpdateUserInput!): User!
 }
