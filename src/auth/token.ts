@@ -32,7 +32,7 @@ export async function getUserFromToken(token: String): Promise<User> {
             }
           */
         }
-        return decoded._id;
+        return decoded["_id"];
     });
     return UserModel.findById(userId);
 }
